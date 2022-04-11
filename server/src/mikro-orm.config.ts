@@ -1,7 +1,10 @@
+// Import funcitonality and customs
 import { __prod__ } from "./constants";
-import { Post } from "./entities/post";
 import { MikroORM } from "@mikro-orm/core";
 import path from "path";
+
+// Import entities
+import { Post } from "./entities/post";
 import { User } from "./entities/User";
 
 export default {

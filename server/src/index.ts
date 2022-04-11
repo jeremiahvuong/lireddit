@@ -12,6 +12,7 @@ import express from "express";
 import session from "express-session";
 import { createClient } from "redis";
 import connectRedis from "connect-redis";
+import cors from "cors";
 
 // Import resolvers
 import { HelloResolver } from "./resolvers/hello";
@@ -29,6 +30,14 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   const redisClient = createClient({ legacyMode: true });
+
+  // cors apply on all routes
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   redisClient.connect().catch(console.error);
 
@@ -62,7 +71,10 @@ const main = async () => {
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
 
   app.listen(4000, () => {
     console.log("Server started on localhost:4000");
