@@ -1,6 +1,6 @@
 // Import config & customs
 import "reflect-metadata";
-import { __prod__ } from "./constants";
+import { COOKIE_NAME, __prod__ } from "./constants";
 import mikroConfig from "./mikro-orm.config";
 import { MyContext } from "./types";
 
@@ -43,7 +43,7 @@ const main = async () => {
 
   app.use(
     session({
-      name: "qid",
+      name: COOKIE_NAME,
       store: new RedisStore({ client: redisClient as any, disableTouch: true }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years
