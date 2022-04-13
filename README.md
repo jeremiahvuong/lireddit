@@ -15,4 +15,3 @@ A reddit like fullstack project.
 | Next.js           |
 | TypeGraphQL       |
 | Chakra            |
-| Docker            |
