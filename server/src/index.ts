@@ -10,7 +10,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import express from "express";
 import session from "express-session";
-import { createClient } from "redis";
+import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import cors from "cors";
 
@@ -25,11 +25,9 @@ const main = async () => {
 
   // Refreshes migrations
   await orm.getMigrator().up();
-
   const app = express();
-
   const RedisStore = connectRedis(session);
-  const redisClient = createClient({ legacyMode: true });
+  const redis = new Redis();
 
   // cors apply on all routes
   app.use(
@@ -39,12 +37,12 @@ const main = async () => {
     })
   );
 
-  redisClient.connect().catch(console.error);
+  redis.connect().catch(console.error);
 
   app.use(
     session({
       name: COOKIE_NAME,
-      store: new RedisStore({ client: redisClient as any, disableTouch: true }),
+      store: new RedisStore({ client: redis as any, disableTouch: true }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 Years
         httpOnly: true,
@@ -67,7 +65,7 @@ const main = async () => {
         // apollo server sucks, instead use graphql playground
       }),
     ],
-    context: ({ req, res }: MyContext) => ({ em: orm.em, req, res }),
+    context: ({ req, res }: MyContext) => ({ em: orm.em, req, res, redis }),
   });
 
   await apolloServer.start();
